@@ -19,24 +19,21 @@ app.get('/', (req: Request, res: Response) => {
 async function connectDB(): Promise<void> {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB, MONGO_HOSTNAME } = process.env;
 
-  // Support full connection string env vars (Atlas or custom): prefer MONGO_URL / MONGO_URI / mongo_url
   const envUrl = process.env.MONGO_URL || process.env.MONGO_URI || process.env.mongo_url;
 
   let url: string | undefined = envUrl;
 
   if (!url) {
+    
     if (!MONGO_HOSTNAME || !MONGO_DB) {
       console.warn('MONGO_HOSTNAME or MONGO_DB not set; skipping DB connection.');
       return;
     }
+    
 
     const authPart = MONGO_USERNAME && MONGO_PASSWORD ? `${encodeURIComponent(MONGO_USERNAME)}:${encodeURIComponent(MONGO_PASSWORD)}@` : '';
     url = `mongodb://${authPart}${MONGO_HOSTNAME}/${MONGO_DB}?authSource=topicosDS`;
   }
-
-  // Mask credentials when logging
-  const maskedUrl = url.replace(/:(?:[^:@/]+)@/, ':***@');
-  console.log(`Attempting to connect to MongoDB using: ${maskedUrl}`);
 
   try {
     // Short server selection timeout to fail fast and reveal errors quickly
