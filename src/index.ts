@@ -1,12 +1,58 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
+import cors from 'cors';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
-const PORT = 3005;
+const PORT = Number(process.env.PORT) || 3005;
 
-app.get('/', (req, res) => {
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: false }));
+
+app.get('/', (req: Request, res: Response) => {
   res.send('Hola mundo, patricia y violeta y su primera API 💗');
 });
 
-app.listen(PORT, () => {
+async function connectDB(): Promise<void> {
+  const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB, MONGO_HOSTNAME } = process.env;
+
+  // Support full connection string env vars (Atlas or custom): prefer MONGO_URL / MONGO_URI / mongo_url
+  const envUrl = process.env.MONGO_URL || process.env.MONGO_URI || process.env.mongo_url;
+
+  let url: string | undefined = envUrl;
+
+  if (!url) {
+    if (!MONGO_HOSTNAME || !MONGO_DB) {
+      console.warn('MONGO_HOSTNAME or MONGO_DB not set; skipping DB connection.');
+      return;
+    }
+
+    const authPart = MONGO_USERNAME && MONGO_PASSWORD ? `${encodeURIComponent(MONGO_USERNAME)}:${encodeURIComponent(MONGO_PASSWORD)}@` : '';
+    url = `mongodb://${authPart}${MONGO_HOSTNAME}/${MONGO_DB}?authSource=topicosDS`;
+  }
+
+  // Mask credentials when logging
+  const maskedUrl = url.replace(/:(?:[^:@/]+)@/, ':***@');
+  console.log(`Attempting to connect to MongoDB using: ${maskedUrl}`);
+
+  try {
+    // Short server selection timeout to fail fast and reveal errors quickly
+    await mongoose.connect(url, { serverSelectionTimeoutMS: 5000 });
+    console.log('Conectado a la base de datos');
+  } catch (err: any) {
+    console.error('Error al conectarse a la base de datos:', err?.message ?? err);
+    // Rethrow if you want the process to crash and nodemon to restart for visibility
+    // throw err;
+  }
+}
+
+app.listen(PORT, async () => {
+  await connectDB();
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+export default app;
+
