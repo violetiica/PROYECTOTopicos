@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "rootDir": "./src",            /* Donde está tu código */
+    "outDir": "./dist",           /* Donde se guardará el código compilado */
+    "esModuleInterop": true,      /* Importante para librerías como express */
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,               /* Requisito de buena calidad en el proyecto */
+    "skipLibCheck": true
+  },
+  "ts-node": {
+    "esm": true,
+    "experimentalEsm": true
+  },
+  "include": ["src/**/*"],        /* Incluye todo lo que esté en src */
+  "exclude": ["node_modules"]
+}
