@@ -36,13 +36,10 @@ async function connectDB(): Promise<void> {
   }
 
   try {
-    // Short server selection timeout to fail fast and reveal errors quickly
     await mongoose.connect(url, { serverSelectionTimeoutMS: 5000 });
     console.log('Conectado a la base de datos');
   } catch (err: any) {
     console.error('Error al conectarse a la base de datos:', err?.message ?? err);
-    // Rethrow if you want the process to crash and nodemon to restart for visibility
-    // throw err;
   }
 }
 
