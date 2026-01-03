@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import geoRoutes from './routes/GeoRoutes.js';
+import transporteRoutes from './routes/TransporteRoutes.js';
 
 dotenv.config();
 
@@ -15,6 +17,9 @@ app.use(express.urlencoded({ extended: false }));
 app.get('/', (req: Request, res: Response) => {
   res.send('Hola mundo, patricia y violeta y su primera API 💗');
 });
+
+app.use('/geo', geoRoutes);
+app.use('/transporte', transporteRoutes);
 
 async function connectDB(): Promise<void> {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB, MONGO_HOSTNAME } = process.env;
@@ -46,6 +51,20 @@ async function connectDB(): Promise<void> {
 app.listen(PORT, async () => {
   await connectDB();
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Endpoints disponibles:`);
+  console.log(`   GET    http://localhost:${PORT}/`);
+  console.log(`Módulo GEO (Reportes Ciudadanos):`);
+  console.log(`   POST   http://localhost:${PORT}/geo/reporte`);
+  console.log(`   GET    http://localhost:${PORT}/geo/reportes`);
+  console.log(`   GET    http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`   PUT    http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`   DELETE http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`Módulo TRANSPORTE:`);
+  console.log(`   POST   http://localhost:${PORT}/transporte/transporte`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/transportes`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/transporte/:id`);
+  console.log(`   PUT    http://localhost:${PORT}/transporte/transporte/:id`);
+  console.log(`   DELETE http://localhost:${PORT}/transporte/transporte/:id\n`);
 });
 
 export default app;
