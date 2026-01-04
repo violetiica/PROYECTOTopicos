@@ -2,6 +2,12 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import geoRoutes from './routes/GeoRoutes.js';
+import transporteRoutes from './routes/TransporteRoutes.js';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerOptions } from './docs/swagger.js';
+
 
 dotenv.config();
 
@@ -15,6 +21,13 @@ app.use(express.urlencoded({ extended: false }));
 app.get('/', (req: Request, res: Response) => {
   res.send('Hola mundo, patricia y violeta y su primera API 💗');
 });
+
+app.use('/geo', geoRoutes);
+app.use('/transporte', transporteRoutes);
+
+//Configuracion de la documentacion 
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 async function connectDB(): Promise<void> {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB, MONGO_HOSTNAME } = process.env;
@@ -36,20 +49,35 @@ async function connectDB(): Promise<void> {
   }
 
   try {
-    // Short server selection timeout to fail fast and reveal errors quickly
     await mongoose.connect(url, { serverSelectionTimeoutMS: 5000 });
     console.log('Conectado a la base de datos');
   } catch (err: any) {
     console.error('Error al conectarse a la base de datos:', err?.message ?? err);
-    // Rethrow if you want the process to crash and nodemon to restart for visibility
-    // throw err;
   }
 }
 
 app.listen(PORT, async () => {
   await connectDB();
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Endpoints disponibles:`);
+  console.log(`   GET    http://localhost:${PORT}/`);
+  console.log(`Módulo GEO (Reportes Ciudadanos):`);
+  console.log(`   POST   http://localhost:${PORT}/geo/reporte`);
+  console.log(`   GET    http://localhost:${PORT}/geo/reportes`);
+  console.log(`   GET    http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`   PUT    http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`   DELETE http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`   GET    http://localhost:${PORT}/geo/city/:city`); //Buscar ciudad en GeoNames API
+  console.log(`   GET    http://localhost:${PORT}/geo/cities-cache`); //Ver las ciudades de la bd
+  console.log(`Módulo TRANSPORTE:`);
+  console.log(`   POST   http://localhost:${PORT}/transporte/transporte`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/transportes`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/transporte/:id`);
+  console.log(`   PUT    http://localhost:${PORT}/transporte/transporte/:id`);
+  console.log(`   DELETE http://localhost:${PORT}/transporte/transporte/:id`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/status`);           //este y el de abajo son de la API London
+  console.log(`   GET    http://localhost:${PORT}/transporte/line/:lineId\n`);
+  console.log(`DOCUMENTACION: http://localhost:3005/api-docs`);
 });
 
 export default app;
-
