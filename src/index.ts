@@ -59,13 +59,16 @@ app.listen(PORT, async () => {
   console.log(`   GET    http://localhost:${PORT}/geo/reporte/:id`);
   console.log(`   PUT    http://localhost:${PORT}/geo/reporte/:id`);
   console.log(`   DELETE http://localhost:${PORT}/geo/reporte/:id`);
+  console.log(`   GET    http://localhost:${PORT}/geo/city/:city`); //Buscar ciudad en GeoNames API
+  console.log(`   GET    http://localhost:${PORT}/geo/cities-cache`); //Ver cache de ciudades
   console.log(`Módulo TRANSPORTE:`);
   console.log(`   POST   http://localhost:${PORT}/transporte/transporte`);
   console.log(`   GET    http://localhost:${PORT}/transporte/transportes`);
   console.log(`   GET    http://localhost:${PORT}/transporte/transporte/:id`);
   console.log(`   PUT    http://localhost:${PORT}/transporte/transporte/:id`);
-  console.log(`   DELETE http://localhost:${PORT}/transporte/transporte/:id\n`);
+  console.log(`   DELETE http://localhost:${PORT}/transporte/transporte/:id`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/status`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/line/:lineId\n`);
 });
 
 export default app;
-

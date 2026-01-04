@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { Transporte } from '../models/transporteincidents.js';
+import { 
+    obtenerEstadoLineas, 
+    obtenerInfoLinea 
+} from '../services/TransporteLondonAPI.js';
 
 // Obtener todos los transportes
 export const getTransportes = async (req: Request, res: Response) => {
@@ -96,3 +100,63 @@ export const deleteTransporte = async(req: Request, res: Response) => {
         return res.status(500).json({ message: 'Error del servidor' });
     }
 }
+
+
+// Obtener estado de todas las líneas de la API
+export const getTransportStatus = async (req: Request, res: Response) => {
+    try {
+        const resultado = await obtenerEstadoLineas();
+
+        if ('mensaje' in resultado) {
+            if (resultado.mensaje && resultado.mensaje.includes('Error')) {
+                return res.status(500).json(resultado);
+            }
+            return res.status(404).json(resultado);
+        }
+
+        return res.status(200).json({
+            mensaje: 'Estado de transporte obtenido exitosamente',
+            data: resultado
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            mensaje: 'Error al obtener estado de transporte',
+            error: error.message
+        });
+    }
+};
+
+
+// Obtener información de una línea 
+export const getLineInfo = async (req: Request, res: Response) => {
+    try {
+        const { lineId } = req.params;
+
+        if (!lineId) {
+            return res.status(400).json({
+                mensaje: 'El parámetro lineId es requerido'
+            });
+        }
+
+        const resultado = await obtenerInfoLinea(lineId);
+
+        if ('mensaje' in resultado) {
+            if (resultado.mensaje && resultado.mensaje.includes('Error')) {
+                return res.status(500).json(resultado);
+            }
+            return res.status(404).json(resultado);
+        }
+
+        return res.status(200).json({
+            mensaje: 'Información de línea obtenida exitosamente',
+            data: resultado
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({
+            mensaje: 'Error al obtener información de línea',
+            error: error.message
+        });
+    }
+};
