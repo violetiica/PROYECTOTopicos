@@ -13,7 +13,11 @@ import {
 export const postGeoReport = async (req: Request, res: Response) => {
     try {
         const { ciudad, descripcion, tipoIncidencia, coordenadas } = req.body;
-        const nuevoReporte = await crearReporteGeo({ ciudad, descripcion, tipoIncidencia, coordenadas });
+        const nuevoReporte: any = await crearReporteGeo({ ciudad, descripcion, tipoIncidencia, coordenadas });
+        
+        if (nuevoReporte && 'mensaje' in nuevoReporte) {
+            return res.status(500).json(nuevoReporte);
+        }
         
         return res.status(201).json({        //el estatus lo que hace es evitar que se ejecute el codigo despues de enviar la respuesta
             mensaje: 'Se creo el reporte con exito',
