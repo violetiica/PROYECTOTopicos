@@ -4,6 +4,10 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import geoRoutes from './routes/GeoRoutes.js';
 import transporteRoutes from './routes/TransporteRoutes.js';
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
+import { swaggerOptions } from './docs/swagger.js';
+
 
 dotenv.config();
 
@@ -20,6 +24,10 @@ app.get('/', (req: Request, res: Response) => {
 
 app.use('/geo', geoRoutes);
 app.use('/transporte', transporteRoutes);
+
+//Configuracion de la documentacion 
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 async function connectDB(): Promise<void> {
   const { MONGO_USERNAME, MONGO_PASSWORD, MONGO_DB, MONGO_HOSTNAME } = process.env;
@@ -60,15 +68,16 @@ app.listen(PORT, async () => {
   console.log(`   PUT    http://localhost:${PORT}/geo/reporte/:id`);
   console.log(`   DELETE http://localhost:${PORT}/geo/reporte/:id`);
   console.log(`   GET    http://localhost:${PORT}/geo/city/:city`); //Buscar ciudad en GeoNames API
-  console.log(`   GET    http://localhost:${PORT}/geo/cities-cache`); //Ver cache de ciudades
+  console.log(`   GET    http://localhost:${PORT}/geo/cities-cache`); //Ver las ciudades de la bd
   console.log(`Módulo TRANSPORTE:`);
   console.log(`   POST   http://localhost:${PORT}/transporte/transporte`);
   console.log(`   GET    http://localhost:${PORT}/transporte/transportes`);
   console.log(`   GET    http://localhost:${PORT}/transporte/transporte/:id`);
   console.log(`   PUT    http://localhost:${PORT}/transporte/transporte/:id`);
   console.log(`   DELETE http://localhost:${PORT}/transporte/transporte/:id`);
-  console.log(`   GET    http://localhost:${PORT}/transporte/status`);
+  console.log(`   GET    http://localhost:${PORT}/transporte/status`);           //este y el de abajo son de la API London
   console.log(`   GET    http://localhost:${PORT}/transporte/line/:lineId\n`);
+  console.log(`DOCUMENTACION: http://localhost:3005/api-docs`);
 });
 
 export default app;
