@@ -13,8 +13,9 @@ module.exports = {
     }
   }
   ,
-  // Mapear imports relativos a modelos (.js) hacia los .ts en src/models
+  // Mapear imports relativos a modelos y servicios (.js) hacia los .ts en src
   moduleNameMapper: {
-    '^\\.\\./models\\/(.*)\\.js$': '<rootDir>/src/models/$1.ts'
+    '^\\.\\./models\\/(.*)\\.js$': '<rootDir>/src/models/$1.ts',
+    '^\\.\\./services\\/(.*)\\.js$': '<rootDir>/src/services/$1.ts'
   }
 };
